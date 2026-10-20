@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — SmartRing AI</title>
+<meta name="description" content="Sign in to SmartRing AI to monitor your smart doorbells.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233f4fc9'/%3E%3Ccircle cx='16' cy='13' r='5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M10 22c1.8-2.4 3.8-3.4 6-3.4s4.2 1 6 3.4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/styles.css">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('porchlight-theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* keep default */ }
+  })();
+</script>
+</head>
+<body class="login-body">
+
+<a class="skip-link" href="#login-form">Skip to sign-in form</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute">
+  <defs></defs>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="9" r="3.4"/><path d="M6.5 19c1.3-2 3.2-3 5.5-3s4.2 1 5.5 3"/><circle cx="12" cy="12" r="9.2" opacity=".35"/>
+  </symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/>
+  </symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+  </symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="11" width="14" height="9" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/>
+  </symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>
+  </symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 4l16 16"/><path d="M9.9 5.9A9.4 9.4 0 0 1 12 5.8c6 0 9.5 6.2 9.5 6.2a15.6 15.6 0 0 1-3.4 4.1M6.6 7.9A15.8 15.8 0 0 0 2.5 12S6 18.2 12 18.2c1.2 0 2.3-.2 3.3-.6"/><path d="M9.9 9.9a2.8 2.8 0 0 0 4 4"/>
+  </symbol>
+</svg>
+
+<main class="login">
+  <!-- decorative dusk porch -->
+  <div class="login__scene" aria-hidden="true">
+    <svg viewBox="0 0 640 960" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="lsky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0e1428"/>
+          <stop offset="55%" stop-color="#252a4e"/>
+          <stop offset="100%" stop-color="#6a4a41"/>
+        </linearGradient>
+        <radialGradient id="lmoon" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e8ecff" stop-opacity=".85"/>
+          <stop offset="100%" stop-color="#e8ecff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="lglow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffd9a0" stop-opacity=".9"/>
+          <stop offset="45%" stop-color="#ffb86b" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#ffb86b" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="lwin" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#ffca7a" stop-opacity=".7"/>
+          <stop offset="100%" stop-color="#ffca7a" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="lwall" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#232a3d"/>
+          <stop offset="100%" stop-color="#1a2030"/>
+        </linearGradient>
+      </defs>
+
+      <rect width="640" height="960" fill="url(#lsky)"/>
+      <circle cx="480" cy="140" r="90" fill="url(#lmoon)"/>
+      <circle cx="480" cy="140" r="22" fill="#e9edff" opacity=".92"/>
+      <g fill="#dfe5ff">
+        <circle class="login-star" style="--tw:.2s" cx="90" cy="90" r="1.4" opacity=".75"/>
+        <circle class="login-star" style="--tw:1.4s" cx="170" cy="160" r="1.1" opacity=".5"/>
+        <circle class="login-star" style="--tw:.7s" cx="260" cy="70" r="1.5" opacity=".8"/>
+        <circle class="login-star" style="--tw:2.1s" cx="340" cy="180" r="1.1" opacity=".45"/>
+        <circle class="login-star" style="--tw:1.1s" cx="120" cy="260" r="1.2" opacity=".55"/>
+        <circle class="login-star" style="--tw:.4s" cx="560" cy="250" r="1.2" opacity=".6"/>
+        <circle class="login-star" style="--tw:1.8s" cx="600" cy="90" r="1" opacity=".5"/>
+        <circle class="login-star" style="--tw:.9s" cx="420" cy="60" r="1.2" opacity=".65"/>
+        <circle class="login-star" style="--tw:2.4s" cx="220" cy="300" r="1" opacity=".4"/>
+        <circle class="login-star" style="--tw:1.6s" cx="520" cy="330" r="1.1" opacity=".45"/>
+        <circle class="login-star" style="--tw:.5s" cx="380" cy="120" r="1" opacity=".5"/>
+        <circle class="login-star" style="--tw:2s" cx="40" cy="180" r="1.1" opacity=".4"/>
+      </g>
+
+      <!-- fireflies -->
+      <g fill="#ffd9a0">
+        <circle class="login-fly" style="--fx:0s; --fy:0s" cx="120" cy="700" r="2" opacity=".55"/>
+        <circle class="login-fly" style="--fx:2.2s; --fy:.8s" cx="560" cy="760" r="1.7" opacity=".45"/>
+        <circle class="login-fly" style="--fx:1.1s; --fy:1.6s" cx="90" cy="820" r="1.5" opacity=".4"/>
+        <circle class="login-fly" style="--fx:3s; --fy:.4s" cx="600" cy="690" r="1.8" opacity=".5"/>
+      </g>
+
+      <!-- trees -->
+      <g>
+        <ellipse cx="80" cy="620" rx="70" ry="110" fill="#15202c"/>
+        <ellipse cx="140" cy="680" rx="50" ry="80" fill="#182632"/>
+        <ellipse cx="580" cy="640" rx="80" ry="130" fill="#14202b"/>
+      </g>
+
+      <!-- house -->
+      <path d="M120 520 L320 390 L520 520 L520 860 L120 860 Z" fill="#161c2c"/>
+
+      <!-- warm room light behind window -->
+      <rect x="194" y="584" width="88" height="70" fill="#e8b878" opacity=".7"/>
+
+      <!-- interior behind the door -->
+      <rect x="336" y="566" width="108" height="192" fill="#1a1420"/>
+      <rect class="login-interior-floor" x="336" y="720" width="108" height="38" fill="#2a2030"/>
+
+      <!-- person inside (behind wall — only visible through window & door openings) -->
+      <g transform="translate(390, 758)">
+        <g class="login-person">
+          <circle cx="0" cy="-148" r="16" fill="#000"/>
+          <path d="M-18 -126 Q0 -136 18 -126 L20 -48 L-20 -48 Z" fill="#000"/>
+          <path class="login-person__leg login-person__leg--l" d="M-8 -48 L-12 0" stroke="#000" stroke-width="12" stroke-linecap="round"/>
+          <path class="login-person__leg login-person__leg--r" d="M8 -48 L12 0" stroke="#000" stroke-width="12" stroke-linecap="round"/>
+          <path class="login-person__arm login-person__arm--l" d="M-18 -112 L-32 -70" stroke="#000" stroke-width="10" stroke-linecap="round"/>
+          <path class="login-person__arm login-person__arm--r" d="M18 -112 L32 -74" stroke="#000" stroke-width="10" stroke-linecap="round"/>
+        </g>
+      </g>
+
+      <!-- wall with window + door openings (covers person except through holes) -->
+      <path fill-rule="evenodd" fill="url(#lwall)" d="M150 520 H490 V860 H150 Z M194 584 H282 V654 H194 Z M336 566 H444 V758 H336 Z"/>
+      <g stroke="#2c3450" stroke-width="1.4" opacity=".55">
+        <path d="M150 560h40M290 560h200"/>
+        <path d="M150 600h44M282 600h54M444 600h46"/>
+        <path d="M150 640h44M282 640h54M444 640h46"/>
+        <path d="M150 680h186M444 680h46"/>
+        <path d="M150 720h186M444 720h46"/>
+        <path d="M150 760h340"/>
+        <path d="M150 800h340"/>
+      </g>
+      <path d="M120 520 L320 390 L520 520" fill="none" stroke="#0f1422" stroke-width="4"/>
+
+      <!-- window glass (semi-transparent — person silhouette shows through) -->
+      <rect x="190" y="580" width="96" height="78" rx="4" fill="#ffca7a" opacity=".14"/>
+      <circle cx="238" cy="619" r="70" fill="url(#lwin)" opacity=".3"/>
+      <g fill="#ffca7a">
+        <rect x="198" y="588" width="38" height="30" opacity=".6"/>
+        <rect x="244" y="588" width="34" height="30" opacity=".34"/>
+        <rect x="198" y="626" width="38" height="24" opacity=".44"/>
+        <rect x="244" y="626" width="34" height="24" opacity=".22"/>
+      </g>
+      <g stroke="#121728" stroke-width="3.5" fill="none">
+        <rect x="190" y="580" width="96" height="78" rx="4"/>
+        <line x1="238" y1="582" x2="238" y2="656"/>
+        <line x1="192" y1="619" x2="284" y2="619"/>
+      </g>
+
+      <!-- warm light spill when door opens -->
+      <rect class="login-door-spill" x="336" y="700" width="108" height="58" fill="#ffca7a" opacity="0"/>
+
+      <!-- door (swings open) -->
+      <g class="login-door">
+        <rect x="330" y="560" width="120" height="200" rx="4" fill="#0f1420"/>
+        <rect x="338" y="568" width="104" height="192" rx="3" fill="#3a2a22"/>
+        <rect x="350" y="582" width="80" height="56" rx="3" fill="#4a3628"/>
+        <rect x="350" y="652" width="80" height="44" rx="3" fill="#4a3628"/>
+        <rect x="350" y="710" width="80" height="36" rx="3" fill="#4a3628"/>
+        <circle cx="424" cy="676" r="4.5" fill="#c9a66b"/>
+        <rect class="login-door-glass" x="366" y="588" width="48" height="42" rx="2" fill="#ffca7a" opacity=".5"/>
+      </g>
+      <circle class="login-scene-pulse" cx="390" cy="660" r="56" fill="url(#lglow)" opacity=".25"/>
+
+      <!-- doorbell button + ring pulses -->
+      <rect x="458" y="654" width="9" height="15" rx="2.5" fill="#c9a66b"/>
+      <circle cx="462.5" cy="661" r="2.6" fill="#ffd9a0"/>
+      <circle class="login-ring login-ring--1" cx="462.5" cy="661" r="9" fill="none" stroke="#ffd9a0" stroke-width="1.4"/>
+      <circle class="login-ring login-ring--2" cx="462.5" cy="661" r="9" fill="none" stroke="#ffd9a0" stroke-width="1.4"/>
+
+      <!-- porch light -->
+      <circle cx="478" cy="580" r="70" fill="url(#lglow)" class="login-scene-pulse"/>
+      <rect x="473" y="554" width="10" height="16" rx="2" fill="#ffd9a0"/>
+      <rect x="470" y="550" width="16" height="6" rx="2" fill="#e8b96f"/>
+
+      <!-- steps + path -->
+      <rect x="300" y="760" width="180" height="18" fill="#252c40"/>
+      <rect x="286" y="778" width="208" height="16" fill="#1e2436"/>
+      <path d="M310 794 L470 794 L560 960 L220 960 Z" fill="#20263a"/>
+      <path d="M310 794 L470 794" stroke="#2b334a" stroke-width="2"/>
+
+      <!-- planters -->
+      <g>
+        <rect x="246" y="730" width="36" height="36" rx="4" fill="#2a3145"/>
+        <circle cx="256" cy="716" r="15" fill="#2f4a3a"/>
+        <circle cx="272" cy="710" r="12" fill="#3a5c46"/>
+        <rect x="500" y="736" width="32" height="32" rx="4" fill="#2a3145"/>
+        <circle cx="510" cy="722" r="13" fill="#2f4a3a"/>
+        <circle cx="524" cy="718" r="11" fill="#3a5c46"/>
+      </g>
+    </svg>
+    <div class="login__scene-caption">
+      <p class="login__scene-kicker">SmartRing AI</p>
+      <p class="login__scene-line">Never miss a moment<br>at the door.</p>
+    </div>
+  </div>
+
+  <!-- sign-in panel -->
+  <div class="login__panel">
+    <div class="login__toolbar">
+      <button type="button" class="icon-btn" id="login-theme" aria-label="Switch to dark mode">
+        <svg class="icon icon--sun" width="18" height="18" aria-hidden="true"><use href="#i-sun"/></svg>
+        <svg class="icon icon--moon" width="18" height="18" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+
+    <div class="login__card">
+      <div class="login__brand">
+        <span class="brand__mark" aria-hidden="true"><svg width="22" height="22"><use href="#i-bell"/></svg></span>
+        <span class="brand__text">
+          <span class="brand__name">SmartRing AI</span>
+          <span class="brand__sub">Home watch</span>
+        </span>
+      </div>
+
+      <h1 class="login__title">Welcome back</h1>
+      <p class="login__lede">Sign in to check the door, the clips, and who’s been by.</p>
+
+      <form class="login__form" id="login-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="login-email">Email</label>
+          <input class="input" type="email" id="login-email" name="email" autocomplete="username"
+                 placeholder="you@example.com" required aria-describedby="login-error">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="login-password">Password</label>
+          <div class="login__pw-wrap">
+            <input class="input" type="password" id="login-password" name="password"
+                   autocomplete="current-password" placeholder="••••••••" required aria-describedby="login-error">
+            <button type="button" class="login__pw-toggle" id="login-pw-toggle"
+                    aria-label="Show password" aria-pressed="false">
+              <svg class="icon icon--eye" width="17" height="17" aria-hidden="true"><use href="#i-eye"/></svg>
+              <svg class="icon icon--eye-off" width="17" height="17" aria-hidden="true"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="login__error" id="login-error" role="alert" hidden></p>
+
+        <button type="submit" class="btn btn--accent login__submit" id="login-submit">
+          <svg width="17" height="17" aria-hidden="true"><use href="#i-lock"/></svg>
+          <span id="login-submit-label">Sign in</span>
+        </button>
+      </form>
+
+      <div class="login__divider" role="separator"><span>or try the demo</span></div>
+
+      <div class="login__demo">
+        <div class="login__demo-head">
+          <span class="login__demo-kicker">Demo account</span>
+          <span class="login__demo-tag">No signup needed</span>
+        </div>
+        <dl class="login__demo-creds">
+          <div><dt>Email</dt><dd><code>demo@porchlight.app</code></dd></div>
+          <div><dt>Password</dt><dd><code>doorbell123</code></dd></div>
+        </dl>
+        <button type="button" class="btn btn--ghost btn--sm" id="login-demo-fill">Fill demo &amp; sign in</button>
+      </div>
+
+      <p class="login__footnote">Mock authentication for this prototype — sessions live in <code>localStorage</code>.</p>
+      <p class="login__trust">
+        <svg width="13" height="13" aria-hidden="true"><use href="#i-lock"/></svg>
+        Sign-in stays on this device — nothing is sent to a server.
+      </p>
+    </div>
+  </div>
+</main>
+
+<script src="js/auth.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

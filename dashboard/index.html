@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartRing AI: Intelligent IoT Doorbell Monitoring System</title>
+<meta name="description" content="SmartRing AI: intelligent, real-time monitoring for your smart doorbells — live feed, notifications, analytics, health and access logs.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233f4fc9'/%3E%3Ccircle cx='16' cy='13' r='5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M10 22c1.8-2.4 3.8-3.4 6-3.4s4.2 1 6 3.4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/styles.css">
+<script>
+  /* Apply theme before first paint to avoid a flash of the wrong palette. */
+  (function () {
+    try {
+      var t = localStorage.getItem('porchlight-theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* keep default */ }
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- ============ inline icon sprite ============ -->
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="ico" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></g>
+  </defs>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="9" r="3.4"/><path d="M6.5 19c1.3-2 3.2-3 5.5-3s4.2 1 5.5 3"/><circle cx="12" cy="12" r="9.2" opacity=".35"/>
+  </symbol>
+  <symbol id="i-ring" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3a6 6 0 0 0-6 6c0 5-2 6-2 6h16s-2-1-2-6a6 6 0 0 0-6-6z"/><path d="M10.3 19a2 2 0 0 0 3.4 0"/>
+  </symbol>
+  <symbol id="i-motion" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 15a7 7 0 0 1 0-6"/><path d="M8.5 16.5a10 10 0 0 1 0-9"/><path d="M12 18a13 13 0 0 1 0-12"/><circle cx="18.5" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="3.4"/><path d="M5.5 19.5c1.2-3.2 3.6-4.8 6.5-4.8s5.3 1.6 6.5 4.8"/>
+  </symbol>
+  <symbol id="i-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.5 8.5 12 4l8.5 4.5v7L12 20l-8.5-4.5z"/><path d="M3.5 8.5 12 13l8.5-4.5M12 13v7"/>
+  </symbol>
+  <symbol id="i-tamper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.2 5 6v5.5c0 4.4 2.9 7.6 7 9.3 4.1-1.7 7-4.9 7-9.3V6z"/><path d="M12 9v4"/><circle cx="12" cy="16" r=".9" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-battery-low" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2.5" y="8" width="16" height="8" rx="2.2"/><path d="M21 11v2"/><path d="M6 11v2"/>
+  </symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2.5 9.5a14 14 0 0 1 5-3"/><path d="M14 6.8a14 14 0 0 1 7.5 2.7"/><path d="M6 13a10 10 0 0 1 3-1.8"/><path d="M15 11.5a10 10 0 0 1 3 1.5"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor" stroke="none"/><path d="M3 3l18 18"/>
+  </symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/>
+  </symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M15.5 9.5a4 4 0 0 1 0 5"/><path d="M18 7a7.5 7.5 0 0 1 0 10"/>
+  </symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16 10l4 4M20 10l-4 4"/>
+  </symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.4"/>
+  </symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="11" width="14" height="9" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/>
+  </symbol>
+  <symbol id="i-unlock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="11" width="14" height="9" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 6.9-1"/>
+  </symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/>
+  </symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12.5 10 17.5 19 7"/>
+  </symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 7h15"/><path d="M9.5 7V5h5v2"/><path d="M6.5 7l1 12h9l1-12"/><path d="M10.5 11v4.5M13.5 11v4.5"/>
+  </symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 6.5 18 12l-9 5.5z"/>
+  </symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.5 9.2a13.5 13.5 0 0 1 17 0"/><path d="M6.6 12.6a9 9 0 0 1 10.8 0"/><path d="M9.7 16a4.6 4.6 0 0 1 4.6 0"/><circle cx="12" cy="19" r="1.3" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 6l12 12M18 6 6 18"/>
+  </symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 16V8M8 18.5v-13M12 15.5v-7M16 19v-14M20 14v-4"/>
+  </symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M17 8.5 20.5 12 17 15.5"/><path d="M20 12H10"/>
+  </symbol>
+</svg>
+
+<!-- ============ header ============ -->
+<header class="topbar">
+  <div class="topbar__row">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true"><svg width="22" height="22"><use href="#i-bell"/></svg></span>
+      <span class="brand__text">
+        <h1 class="brand__name">SmartRing AI</h1>
+        <span class="brand__sub">Home watch</span>
+      </span>
+    </div>
+
+    <div class="device-switch" id="device-switch" role="group" aria-label="Select doorbell device"></div>
+
+    <div class="topbar__actions">
+      <span class="mock-chip" title="This dashboard runs on a mock realtime engine">Mock mode</span>
+      <div class="acct" id="acct">
+        <span class="acct__avatar" id="acct-avatar" aria-hidden="true">–</span>
+        <span class="acct__name" id="acct-name">Account</span>
+        <button type="button" class="icon-btn" id="btn-logout" aria-label="Log out">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-logout"/></svg>
+        </button>
+      </div>
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch to dark mode">
+        <svg class="icon icon--sun" width="18" height="18" aria-hidden="true"><use href="#i-sun"/></svg>
+        <svg class="icon icon--moon" width="18" height="18" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="statusstrip" id="status-strip" role="group" aria-label="Selected device status"></div>
+
+  <nav class="secnav" aria-label="Dashboard sections">
+    <div class="secnav__scroller">
+      <a class="secnav__link" href="#live">Live feed</a>
+      <a class="secnav__link" href="#notifications">Notifications
+        <span class="badge badge--accent" id="nav-unread" role="status" hidden>0</span>
+      </a>
+      <a class="secnav__link" href="#analytics">Analytics</a>
+      <a class="secnav__link" href="#settings">Settings</a>
+      <a class="secnav__link" href="#health">Health</a>
+      <a class="secnav__link" href="#visitors">Visitors</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main" class="layout">
+
+  <!-- ============ 01 live feed ============ -->
+  <section class="panel panel--feed" id="live" aria-labelledby="live-title">
+    <header class="panel__head">
+      <div class="panel__titles">
+        <span class="panel__index" aria-hidden="true">01</span>
+        <h2 class="panel__title" id="live-title">Live feed</h2>
+      </div>
+      <div class="panel__meta">
+        <span class="chip chip--ghost" id="feed-quality">1080p · 30 fps</span>
+        <button type="button" class="link-btn" id="btn-simulate">Simulate ring</button>
+      </div>
+    </header>
+
+    <div class="feed">
+      <div class="feed__stage" id="feed-stage">
+        <!-- Stylised dusk porch scene — pure SVG, no external images -->
+        <svg class="feed__scene" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#131a30"/>
+              <stop offset="55%" stop-color="#2a2b4d"/>
+              <stop offset="100%" stop-color="#6a4a41"/>
+            </linearGradient>
+            <radialGradient id="porchGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffd9a0" stop-opacity=".85"/>
+              <stop offset="45%" stop-color="#ffb86b" stop-opacity=".32"/>
+              <stop offset="100%" stop-color="#ffb86b" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#e8ecff" stop-opacity=".8"/>
+              <stop offset="100%" stop-color="#e8ecff" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="vign" cx="50%" cy="46%" r="72%">
+              <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#000" stop-opacity=".55"/>
+            </radialGradient>
+            <linearGradient id="wallG" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#232a3d"/>
+              <stop offset="100%" stop-color="#1a2030"/>
+            </linearGradient>
+            <radialGradient id="hallGlow" cx="50%" cy="42%" r="58%">
+              <stop offset="0%" stop-color="#ffe0ad" stop-opacity=".95"/>
+              <stop offset="55%" stop-color="#ffca7a" stop-opacity=".45"/>
+              <stop offset="100%" stop-color="#ffca7a" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="hallFloor" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3a2c1a"/>
+              <stop offset="100%" stop-color="#1a120a"/>
+            </linearGradient>
+            <filter id="grainF" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+              <feColorMatrix type="saturate" values="0"/>
+            </filter>
+          </defs>
+
+          <rect width="640" height="360" fill="url(#sky)"/>
+          <circle cx="96" cy="64" r="46" fill="url(#moonGlow)"/>
+          <circle cx="96" cy="64" r="15" fill="#e9edff" opacity=".9"/>
+          <g fill="#dfe5ff">
+            <circle cx="190" cy="42" r="1.2" opacity=".8"/><circle cx="260" cy="88" r="1" opacity=".55"/>
+            <circle cx="330" cy="36" r="1.3" opacity=".7"/><circle cx="410" cy="70" r="1" opacity=".5"/>
+            <circle cx="520" cy="40" r="1.2" opacity=".65"/><circle cx="590" cy="96" r="1" opacity=".45"/>
+            <circle cx="470" cy="110" r="1" opacity=".4"/><circle cx="150" cy="120" r="1" opacity=".4"/>
+          </g>
+
+          <!-- neighbouring roofline -->
+          <path d="M0 150 L80 108 L160 150 L160 220 L0 220 Z" fill="#161c2c"/>
+          <path d="M0 150 L80 108 L160 150" fill="none" stroke="#0f1422" stroke-width="3"/>
+
+          <!-- house wall -->
+          <rect x="150" y="96" width="490" height="196" fill="url(#wallG)"/>
+          <g stroke="#2c3450" stroke-width="1.4" opacity=".65">
+            <path d="M150 128h490M150 160h490M150 192h490M150 224h490M150 256h490"/>
+          </g>
+
+          <!-- door frame -->
+          <rect x="332" y="120" width="118" height="172" rx="4" fill="#0f1420"/>
+          <!-- doorway interior (revealed when the door swings open) -->
+          <g class="scene-interior" aria-hidden="true">
+            <rect x="340" y="128" width="102" height="164" rx="3" fill="#070a12"/>
+            <rect x="348" y="168" width="86" height="100" rx="2" fill="#151009"/>
+            <rect x="348" y="268" width="86" height="24" fill="url(#hallFloor)"/>
+            <ellipse class="scene-interior__glow" cx="391" cy="230" rx="44" ry="58" fill="url(#hallGlow)"/>
+            <circle cx="391" cy="196" r="5" fill="#ffe0ad" opacity=".8"/>
+            <rect x="348" y="286" width="86" height="6" rx="1" fill="#2a2014"/>
+          </g>
+          <!-- door leaf (swings open on unlock) -->
+          <g id="scene-door" class="scene-door">
+            <rect x="340" y="128" width="102" height="164" rx="3" fill="#3a2a22"/>
+            <rect x="350" y="140" width="82" height="52" rx="3" fill="#4a3628"/>
+            <rect x="350" y="204" width="82" height="40" rx="3" fill="#4a3628"/>
+            <rect x="350" y="252" width="82" height="30" rx="3" fill="#4a3628"/>
+            <circle cx="424" cy="212" r="4" fill="#c9a66b"/>
+            <rect x="366" y="146" width="50" height="40" rx="2" fill="#ffca7a" opacity=".55"/>
+          </g>
+          <!-- warm light spilling onto the porch floor while open -->
+          <ellipse class="scene-spill" cx="391" cy="298" rx="56" ry="11" fill="#ffca7a"/>
+
+          <!-- porch light + glow -->
+          <circle cx="486" cy="150" r="66" fill="url(#porchGlow)"/>
+          <rect x="481" y="126" width="10" height="16" rx="2" fill="#ffd9a0"/>
+          <rect x="478" y="122" width="16" height="6" rx="2" fill="#e8b96f"/>
+
+          <!-- window with warm light -->
+          <rect x="208" y="140" width="84" height="64" rx="3" fill="#121728"/>
+          <rect x="214" y="146" width="32" height="24" fill="#ffca7a" opacity=".5"/>
+          <rect x="254" y="146" width="32" height="24" fill="#ffca7a" opacity=".28"/>
+          <rect x="214" y="176" width="32" height="22" fill="#ffca7a" opacity=".35"/>
+          <rect x="254" y="176" width="32" height="22" fill="#ffca7a" opacity=".18"/>
+
+          <!-- porch floor + steps -->
+          <rect x="286" y="292" width="240" height="20" fill="#252c40"/>
+          <rect x="300" y="312" width="212" height="14" fill="#1e2436"/>
+          <rect x="316" y="326" width="184" height="12" fill="#181e2e"/>
+
+          <!-- walkway -->
+          <path d="M330 338 L470 338 L560 360 L240 360 Z" fill="#20263a"/>
+          <path d="M330 338 L470 338" stroke="#2b334a" stroke-width="2"/>
+
+          <!-- planters -->
+          <g>
+            <rect x="262" y="262" width="34" height="34" rx="4" fill="#2a3145"/>
+            <circle cx="272" cy="250" r="14" fill="#2f4a3a"/>
+            <circle cx="288" cy="244" r="12" fill="#38584377"/>
+            <circle cx="281" cy="256" r="10" fill="#3a5c46"/>
+          </g>
+          <g>
+            <rect x="536" y="266" width="30" height="30" rx="4" fill="#2a3145"/>
+            <circle cx="546" cy="254" r="12" fill="#2f4a3a"/>
+            <circle cx="559" cy="250" r="10" fill="#3a5c46"/>
+          </g>
+
+          <!-- railing -->
+          <g stroke="#2f3850" stroke-width="3" stroke-linecap="round">
+            <path d="M286 292v-34M286 258h44"/>
+            <path d="M526 292v-34M526 258h-40"/>
+          </g>
+
+          <!-- visitor silhouette (revealed while someone is at the door) -->
+          <g id="scene-figure" class="scene-figure" opacity="0">
+            <ellipse cx="392" cy="344" rx="34" ry="7" fill="#000" opacity=".35"/>
+            <circle cx="392" cy="252" r="15" fill="#0b0f1a"/>
+            <path d="M372 344c0-30 6-58 20-58s20 28 20 58z" fill="#0b0f1a"/>
+            <path d="M372 292c-8 14-10 30-9 42M412 292c8 14 10 30 9 42" stroke="#0b0f1a" stroke-width="7" stroke-linecap="round" fill="none"/>
+          </g>
+
+          <rect width="640" height="360" fill="url(#vign)"/>
+          <rect width="640" height="360" filter="url(#grainF)" opacity=".05" style="mix-blend-mode:overlay"/>
+        </svg>
+
+        <!-- camera shutter flash -->
+        <div class="feed__flash" id="feed-flash" aria-hidden="true"></div>
+
+        <div class="feed__hud feed__hud--top">
+          <span class="live-badge" id="live-badge"><span class="live-badge__dot" aria-hidden="true"></span>Live</span>
+          <span class="unlocked-badge" id="unlocked-badge" hidden>
+            <svg width="12" height="12" aria-hidden="true"><use href="#i-unlock"/></svg>Unlocked
+          </span>
+          <span class="feed__clock" id="feed-clock">--:--:--</span>
+        </div>
+        <div class="feed__hud feed__hud--bottom">
+          <span class="feed__hud-item" id="feed-device-label">Front Door</span>
+          <span class="feed__hud-sep" aria-hidden="true">·</span>
+          <span class="feed__hud-item">HDR</span>
+          <span class="feed__hud-sep" aria-hidden="true">·</span>
+          <span class="feed__hud-item" id="feed-rec">REC</span>
+          <span class="feed__hud-sep" id="feed-lastshot-sep" aria-hidden="true" hidden>·</span>
+          <span class="feed__hud-item feed__hud-shot" id="feed-lastshot" hidden></span>
+        </div>
+
+        <!-- offline / error state -->
+        <div class="feed__state" id="feed-offline" hidden>
+          <div class="feed__state-card">
+            <svg width="26" height="26" aria-hidden="true"><use href="#i-offline"/></svg>
+            <h3>Camera offline</h3>
+            <p id="feed-offline-detail">This device stopped streaming 1h ago. Live view and remote unlock are unavailable.</p>
+            <button type="button" class="btn btn--ghost" id="btn-retry-stream">Retry connection</button>
+          </div>
+        </div>
+
+        <!-- ring banner (memorable moment) -->
+        <div class="ring-banner" id="ring-banner" role="alert" aria-live="assertive" hidden>
+          <span class="ring-banner__halo" aria-hidden="true"></span>
+          <div class="ring-banner__body">
+            <p class="ring-banner__kicker">Doorbell ring</p>
+            <p class="ring-banner__title">Someone is at the door</p>
+            <p class="ring-banner__meta" id="ring-banner-meta">Front Door · just now</p>
+          </div>
+          <div class="ring-banner__actions">
+            <button type="button" class="btn btn--accent btn--sm" id="btn-ring-accept">Accept &amp; talk</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="btn-ring-dismiss">Dismiss</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feed__controls" role="group" aria-label="Doorbell controls">
+        <button type="button" class="ctl" id="btn-talk" aria-pressed="false">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-mic"/></svg>
+          <span>Talk</span>
+        </button>
+        <button type="button" class="ctl" id="btn-mute" aria-pressed="false">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-speaker"/></svg>
+          <span>Mute</span>
+        </button>
+        <button type="button" class="ctl" id="btn-snapshot">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-camera"/></svg>
+          <span>Snapshot</span>
+        </button>
+        <div class="ctl-anchor">
+          <button type="button" class="ctl ctl--warn" id="btn-unlock" aria-expanded="false" aria-haspopup="dialog">
+            <svg width="18" height="18" aria-hidden="true"><use href="#i-lock"/></svg>
+            <span>Unlock</span>
+          </button>
+          <div class="confirm-pop" id="unlock-confirm" role="dialog" aria-labelledby="unlock-confirm-title" hidden>
+            <p id="unlock-confirm-title" class="confirm-pop__title">Unlock Front Door?</p>
+            <p class="confirm-pop__text">The smart lock will disengage for 5 seconds.</p>
+            <div class="confirm-pop__actions">
+              <button type="button" class="btn btn--ghost btn--sm" id="btn-unlock-cancel">Cancel</button>
+              <button type="button" class="btn btn--danger btn--sm" id="btn-unlock-confirm">Unlock door</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stream-stats" id="stream-stats" role="group" aria-label="Stream health">
+        <div class="stream-stat">
+          <span class="stream-stat__label">Bitrate</span>
+          <span class="stream-stat__value" id="stat-bitrate">—</span>
+        </div>
+        <div class="stream-stat">
+          <span class="stream-stat__label">Latency</span>
+          <span class="stream-stat__value" id="stat-latency">—</span>
+        </div>
+        <div class="stream-stat">
+          <span class="stream-stat__label">Packet loss</span>
+          <span class="stream-stat__value" id="stat-loss">—</span>
+        </div>
+        <div class="stream-stat">
+          <span class="stream-stat__label">Recording</span>
+          <span class="stream-stat__value" id="stat-recording">—</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 notifications ============ -->
+  <section class="panel" id="notifications" aria-labelledby="notif-title">
+    <header class="panel__head">
+      <div class="panel__titles">
+        <span class="panel__index" aria-hidden="true">02</span>
+        <h2 class="panel__title" id="notif-title">Notifications</h2>
+        <span class="badge badge--accent" id="unread-badge" role="status" hidden>0</span>
+        <span class="badge-context" id="unread-context" hidden>this device</span>
+      </div>
+      <button type="button" class="link-btn" id="btn-mark-all">Mark all read</button>
+    </header>
+
+    <div class="filters">
+      <label class="field">
+        <span class="field__label">Type</span>
+        <select id="filter-type" class="select">
+          <option value="all">All events</option>
+          <option value="ring">Doorbell ring</option>
+          <option value="motion">Motion</option>
+          <option value="person">Person</option>
+          <option value="package">Package</option>
+          <option value="tamper">Tamper</option>
+          <option value="low_battery">Low battery</option>
+          <option value="offline">Offline</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="field__label">Range</span>
+        <select id="filter-range" class="select">
+          <option value="today">Today</option>
+          <option value="7d" selected>Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="field__label">Device</span>
+        <select id="filter-device" class="select">
+          <option value="current" selected>This device</option>
+          <option value="all">All devices</option>
+        </select>
+      </label>
+    </div>
+
+    <ol class="event-list" id="event-list" aria-live="polite" aria-relevant="additions text"></ol>
+    <div class="event-list__foot" id="event-list-foot" hidden>
+      <button type="button" class="btn btn--ghost btn--sm" id="btn-show-events">Show all events</button>
+    </div>
+
+    <div class="state-block" id="event-empty" hidden>
+      <svg class="state-block__art" viewBox="0 0 120 90" aria-hidden="true">
+        <rect x="18" y="26" width="84" height="48" rx="8" fill="none" stroke="currentColor" stroke-width="2.4" opacity=".45"/>
+        <path d="M18 40h84" stroke="currentColor" stroke-width="2.4" opacity=".45"/>
+        <circle cx="34" cy="33" r="2.6" fill="currentColor" opacity=".45"/>
+        <circle cx="44" cy="33" r="2.6" fill="currentColor" opacity=".45"/>
+        <path d="M40 58h40" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".35"/>
+      </svg>
+      <h3>No matching events</h3>
+      <p>Nothing arrived for these filters. Widen the date range or clear the filters.</p>
+      <button type="button" class="btn btn--ghost btn--sm" id="btn-clear-filters">Clear filters</button>
+    </div>
+  </section>
+
+  <!-- ============ 03 analytics ============ -->
+  <section class="panel panel--wide" id="analytics" aria-labelledby="analytics-title">
+    <header class="panel__head">
+      <div class="panel__titles">
+        <span class="panel__index" aria-hidden="true">03</span>
+        <h2 class="panel__title" id="analytics-title">Analytics</h2>
+      </div>
+      <p class="panel__meta panel__meta--text" id="analytics-updated">Updated just now</p>
+    </header>
+
+    <div class="stat-row" id="stat-row">
+      <article class="stat">
+        <p class="stat__label">Today’s rings</p>
+        <p class="stat__value" id="stat-rings">—</p>
+        <p class="stat__delta" id="stat-rings-delta"></p>
+      </article>
+      <article class="stat">
+        <p class="stat__label">Motion events</p>
+        <p class="stat__value" id="stat-motion">—</p>
+        <p class="stat__delta" id="stat-motion-delta"></p>
+      </article>
+      <article class="stat">
+        <p class="stat__label">Missed events</p>
+        <p class="stat__value" id="stat-missed">—</p>
+        <p class="stat__delta" id="stat-missed-delta"></p>
+      </article>
+    </div>
+
+    <div class="chart-grid">
+      <article class="card chart-card chart-card--line">
+        <header class="card__head">
+          <h3 class="card__title">Events per hour</h3>
+          <p class="card__meta">Last 24 hours</p>
+        </header>
+        <div class="chart" id="chart-hourly"></div>
+      </article>
+      <article class="card chart-card chart-card--bar">
+        <header class="card__head">
+          <h3 class="card__title">Events per day</h3>
+          <p class="card__meta">Last 7 days</p>
+        </header>
+        <div class="chart" id="chart-daily"></div>
+      </article>
+      <article class="card chart-card chart-card--heat">
+        <header class="card__head">
+          <h3 class="card__title">Busy times</h3>
+          <p class="card__meta" id="heat-summary">7 days × two-hour blocks</p>
+        </header>
+        <div class="chart chart--heat" id="chart-heatmap"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 04 settings ============ -->
+  <section class="panel" id="settings" aria-labelledby="settings-title">
+    <header class="panel__head">
+      <div class="panel__titles">
+        <span class="panel__index" aria-hidden="true">04</span>
+        <h2 class="panel__title" id="settings-title">Notification settings</h2>
+      </div>
+      <span class="chip chip--ghost" id="settings-scope">Front Door</span>
+    </header>
+
+    <form id="settings-form" novalidate>
+      <div class="card">
+        <header class="card__head">
+          <h3 class="card__title">Alert delivery</h3>
+          <p class="card__meta">Choose where each event reaches you</p>
+        </header>
+        <div class="matrix" id="settings-matrix" role="group" aria-label="Event delivery matrix"></div>
+        <p class="hint" id="matrix-hint">SMS delivery for packages and low battery requires the Protect plan.</p>
+      </div>
+
+      <div class="settings-duo">
+        <div class="card">
+          <header class="card__head">
+            <h3 class="card__title">Quiet hours</h3>
+            <p class="card__meta">Push alerts pause in this window</p>
+          </header>
+          <div class="quiet">
+            <label class="switch-row">
+              <span class="switch-row__label" id="quiet-label">Enable quiet hours</span>
+              <button type="button" class="switch" id="quiet-toggle" role="switch" aria-checked="true" aria-labelledby="quiet-label">
+                <span class="switch__thumb" aria-hidden="true"></span>
+              </button>
+            </label>
+            <div class="quiet__times">
+              <label class="field">
+                <span class="field__label">Start</span>
+                <input type="time" id="quiet-start" class="input" value="22:30">
+              </label>
+              <span class="quiet__arrow" aria-hidden="true">→</span>
+              <label class="field">
+                <span class="field__label">End</span>
+                <input type="time" id="quiet-end" class="input" value="07:00">
+              </label>
+            </div>
+            <p class="hint" id="quiet-hint">Rings still ring the indoor chime; push notifications stay silent.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <header class="card__head">
+            <h3 class="card__title">Motion sensitivity</h3>
+            <p class="card__meta" id="sensitivity-label">High</p>
+          </header>
+          <label class="field field--block">
+            <span class="sr-only">Motion sensitivity</span>
+            <input type="range" id="sensitivity" class="range" min="1" max="5" step="1" value="4"
+                   aria-describedby="sensitivity-desc">
+          </label>
+          <div class="range-scale" aria-hidden="true"><span>Low</span><span>High</span></div>
+          <p class="hint" id="sensitivity-desc">Detects most people and large pets; ignores moving branches.</p>
+        </div>
+      </div>
+
+      <div class="settings-duo">
+        <div class="card">
+          <header class="card__head">
+            <h3 class="card__title">Activity zones</h3>
+            <p class="card__meta">Zones off = ignored for motion</p>
+          </header>
+          <div class="zones">
+            <svg class="zones__map" viewBox="0 0 300 170" role="img" aria-label="Top-down diagram of porch, walkway and yard zones">
+              <rect x="0" y="0" width="300" height="26" fill="#1c2233"/>
+              <text x="150" y="17" text-anchor="middle" class="zones__map-label">HOUSE</text>
+              <rect class="zone-shape" data-zone="porch" x="106" y="30" width="88" height="44" rx="6"/>
+              <rect class="zone-shape" data-zone="walkway" x="126" y="80" width="48" height="60" rx="6"/>
+              <rect class="zone-shape" data-zone="yard" x="16" y="80" width="100" height="74" rx="8"/>
+              <rect class="zone-shape" data-zone="yard" x="184" y="80" width="100" height="74" rx="8"/>
+              <text x="150" y="57" text-anchor="middle" class="zones__zone-label">Porch</text>
+              <text x="150" y="113" text-anchor="middle" class="zones__zone-label">Walkway</text>
+              <text x="66" y="122" text-anchor="middle" class="zones__zone-label">Yard</text>
+              <text x="234" y="122" text-anchor="middle" class="zones__zone-label">Yard</text>
+            </svg>
+            <ul class="zones__list" id="zones-list"></ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <header class="card__head">
+            <h3 class="card__title">Indoor chime</h3>
+            <p class="card__meta">Plays when someone rings</p>
+          </header>
+          <div class="chime">
+            <label class="field field--block">
+              <span class="field__label">Sound</span>
+              <select id="chime-select" class="select">
+                <option value="classic">Classic</option>
+                <option value="chime">Chime</option>
+                <option value="melody">Melody</option>
+                <option value="doorbell">Doorbell</option>
+              </select>
+            </label>
+            <button type="button" class="btn btn--ghost btn--sm" id="btn-chime-preview">
+              <svg width="16" height="16" aria-hidden="true"><use href="#i-play"/></svg>
+              Preview
+            </button>
+            <label class="field field--block">
+              <span class="field__label">Volume <span class="field__value" id="volume-value">75%</span></span>
+              <input type="range" id="volume" class="range" min="0" max="100" step="5" value="75">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-foot">
+        <p class="hint" id="settings-status" role="status">All changes saved</p>
+        <button type="submit" class="btn btn--accent" id="btn-save-settings">Save settings</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ============ 05 health ============ -->
+  <section class="panel" id="health" aria-labelledby="health-title">
+    <header class="panel__head">
+      <div class="panel__titles">
+        <span class="panel__index" aria-hidden="true">05</span>
+        <h2 class="panel__title" id="health-title">Device health</h2>
+      </div>
+      <span class="chip chip--ghost" id="health-uptime">—</span>
+    </header>
+
+    <div class="health-grid">
+      <article class="card health-card">
+        <header class="card__head">
+          <h3 class="card__title">Battery</h3>
+          <p class="card__meta">Last 7 days</p>
+        </header>
+        <p class="health-card__value" id="health-battery-value">—</p>
+        <div class="health-card__chart" id="health-battery-spark"></div>
+        <p class="hint" id="health-battery-hint">—</p>
+      </article>
+
+      <article class="card health-card">
+        <header class="card__head">
+          <h3 class="card__title">Wi-Fi signal</h3>
+          <p class="card__meta">Last 24 hours</p>
+        </header>
+        <p class="health-card__value" id="health-signal-value">—</p>
+        <div class="health-card__chart" id="health-signal-spark"></div>
+        <p class="hint" id="health-signal-hint">—</p>
+      </article>
+
+      <article class="card health-card health-card--ring">
+        <header class="card__head">
+          <h3 class="card__title">Clip storage</h3>
+          <p class="card__meta" id="health-storage-meta">—</p>
+        </header>
+        <div class="health-card__ring" id="health-storage-ring"></div>
+        <p class="hint" id="health-storage-hint">—</p>
+      </article>
+    </div>
+
+    <article class="card">
+      <header class="card__head">
+        <h3 class="card__title">Recent diagnostics</h3>
+        <p class="card__meta">Firmware &amp; system log</p>
+      </header>
+      <ul class="log-list" id="log-list"></ul>
+    </article>
+  </section>
+
+  <!-- ============ 06 visitors ============ -->
+  <section class="panel panel--wide" id="visitors" aria-labelledby="visitors-title">
+    <header class="panel__head">
+      <div class="panel__titles">
+        <span class="panel__index" aria-hidden="true">06</span>
+        <h2 class="panel__title" id="visitors-title">Visitors &amp; access</h2>
+      </div>
+      <p class="panel__meta panel__meta--text" id="visitors-scope">Doorbell activity at your home</p>
+    </header>
+
+    <div class="visitors-split">
+      <article class="card">
+        <header class="card__head">
+          <h3 class="card__title">Delivery history</h3>
+          <p class="card__meta" id="deliveries-meta">—</p>
+        </header>
+        <ul class="deliveries" id="deliveries-list"></ul>
+        <div class="state-block state-block--inline" id="deliveries-empty" hidden>
+          <h3>No deliveries</h3>
+          <p>No parcels were left at this door in the last 30 days.</p>
+        </div>
+      </article>
+
+      <article class="card card--table">
+        <header class="card__head">
+          <h3 class="card__title">Visitor log</h3>
+          <p class="card__meta" id="visitor-log-meta">—</p>
+        </header>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Visitor log table, scrollable">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Visitor</th>
+                <th scope="col">Type</th>
+                <th scope="col">When</th>
+                <th scope="col">Event</th>
+              </tr>
+            </thead>
+            <tbody id="visitor-log-body"></tbody>
+          </table>
+        </div>
+        <div class="state-block state-block--inline" id="visitor-log-empty" hidden>
+          <h3>No visitor activity</h3>
+          <p>This device hasn’t logged a visitor yet.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>SmartRing AI dashboard — self-contained demo build. All telemetry is generated by a mock realtime engine; no network requests leave this page.</p>
+  <p class="foot__meta" id="foot-clock">—</p>
+</footer>
+
+<!-- clip player -->
+<div class="clip-modal" id="clip-modal" role="dialog" aria-modal="true" aria-labelledby="clip-modal-title" hidden>
+  <div class="clip-modal__backdrop" data-clip-close></div>
+  <div class="clip-modal__panel" role="document">
+    <div class="clip-modal__stage" id="clip-stage">
+      <div class="clip-modal__scene" id="clip-scene"></div>
+      <div class="clip-modal__scan" aria-hidden="true"></div>
+      <div class="clip-modal__top">
+        <span class="clip-modal__rec" id="clip-rec"><i aria-hidden="true"></i>REC</span>
+        <span class="clip-modal__clock" id="clip-clock">--:--:--</span>
+      </div>
+      <p class="clip-modal__caption" id="clip-caption"></p>
+      <div class="clip-modal__scrub" aria-hidden="true"><div class="clip-modal__bar" id="clip-bar"></div></div>
+    </div>
+    <div class="clip-modal__meta">
+      <div class="clip-modal__meta-text">
+        <p class="clip-modal__title" id="clip-modal-title">Clip</p>
+        <p class="clip-modal__sub" id="clip-modal-sub"></p>
+      </div>
+      <button type="button" class="btn btn--ghost btn--sm" id="clip-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+<div class="sr-only" id="sr-polite" aria-live="polite"></div>
+
+<script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/store.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
